@@ -1,16 +1,27 @@
 export default function MovieListItem(props) {
+    const { title, year, director, description, actors } = props.movie;
+
+    const actorsString = actors
+        .map((actor) => `${actor.name} ${actor.surname}`)
+        .join(', ');
+
     return (
         <div>
             <div>
-                <strong>{props.movie.title}</strong>
+                <strong>{title}</strong>
                 {' '}
-                <span>({props.movie.year})</span>
+                <span>({year})</span>
                 {' '}
-                directed by {props.movie.director}
+                directed by {director}
                 {' '}
-                <a onClick={props.onDelete}>Delete</a>
+                <a onClick={props.onEdit}>edit</a> <a onClick={props.onDelete}>delete</a>
             </div>
-            {props.movie.description}
+
+            <div>{description}</div>
+
+            {actors && actors.length > 0 && (
+                <p>Stars: {actorsString}</p>
+            )}
         </div>
     );
 }

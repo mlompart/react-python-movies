@@ -20,5 +20,50 @@ Accept: application/json
 
 ###
 
-DELETE http://127.0.0.1:8000/movies/5
+DELETE http://127.0.0.1:8000/movies/11
 Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/actors
+
+###
+
+GET http://127.0.0.1:8000/actors/2
+
+###
+
+POST http://127.0.0.1:8000/actors
+Content-Type: application/json
+
+{
+  "name": "John",
+  "surname": "Smith"
+}
+
+###
+
+DELETE http://127.0.0.1:8000/actors/4
+
+###
+
+POST http://127.0.0.1:8000/movies/10/actors
+Content-Type: application/json
+
+{
+  "id": 4,
+  "name": "John",
+  "surname": "Smith"
+}
+
+###
+
+PUT http://127.0.0.1:8000/movies/11
+Content-Type: application/json
+
+{
+  "title": "title1",
+  "year": 1923,
+  "director": "director1",
+  "description": "description1"
+}
