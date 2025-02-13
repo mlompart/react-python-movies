@@ -15,7 +15,7 @@ export default function ActorForm({ onActorSubmit, buttonLabel }) {
     if (typeof onActorSubmit === 'function') {
       onActorSubmit({ name, surname });
     } else {
-      console.error('onActorSubmit nie jest funkcją!');
+      console.error('onActorSubmit is not a function!');
     }
     setName('');
     setSurname('');

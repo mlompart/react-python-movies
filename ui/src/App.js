@@ -7,11 +7,11 @@ import MoviesList from "./MoviesList";
 function App() {
   const [movies, setMovies] = useState([]);
   const [addingMovie, setAddingMovie] = useState(false);
-
   const [editingMovie, setEditingMovie] = useState(null);
 
   async function handleAddMovie(movie) {
-    console.log("Dodaję film (POST na /movies):", movie);
+    console.log("Adding film (POST /movies):", movie);
+
     const response = await fetch('/movies', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -21,16 +21,15 @@ function App() {
     if (response.ok) {
       const movieFromServer = await response.json();
       const updatedMovie = await addActorsToMovie(movieFromServer, movie.actors);
+
       setMovies([...movies, updatedMovie]);
       setAddingMovie(false);
     } else {
-      console.error("Błąd przy dodawaniu filmu");
+      console.error("Error during adding a film");
     }
   }
 
   async function addActorsToMovie(movie, actorList) {
-    console.log("Dodaję aktorów do filmu (POST /movies/%d/actors):", movie.id);
-  
     for (const actor of actorList) {
       const response = await fetch(`/movies/${movie.id}/actors`, {
         method: 'POST',
@@ -39,46 +38,56 @@ function App() {
       });
   
       if (!response.ok) {
-        console.error("Błąd przy dodawaniu aktora", actor);
+        console.error("Error during adding actor ", actor);
       } else {
         const addedActor = await response.json();
-        console.log("Dodano aktora do filmu:", addedActor);
+        console.log("Added actor to film:", addedActor);
       }
     }
   
     const updatedResponse = await fetch(`/movies/${movie.id}`);
     if (updatedResponse.ok) {
       const updatedMovie = await updatedResponse.json();
-      console.log("Zaktualizowany film:", updatedMovie);
       return updatedMovie;
     } else {
-      console.error("Błąd przy pobieraniu zaktualizowanego filmu");
+      console.error("Error during updating a film");
       return movie; 
     }
   }
 
   async function handleEditMovie(movie) {
-    console.log("Rozpoczynam edycję filmu:", movie);
+    console.log("Start editing film: ", movie);
     setEditingMovie(movie);
     setAddingMovie(false);
   }
 
   async function handleUpdateMovie(updatedMovie) {
-    console.log("Wysyłam update na /movies/:id:", updatedMovie);
+    console.log("Updating film (PUT /movies):", updatedMovie);
+
     const response = await fetch(`/movies/${updatedMovie.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedMovie),
+      body: JSON.stringify({
+        id: updatedMovie.id,
+        title: updatedMovie.title,
+        year: updatedMovie.year,
+        director: updatedMovie.director,
+        description: updatedMovie.description
+      }),
     });
 
     if (response.ok) {
-      const movieFromServer = await response.json();
-      
+      let movieFromServer = await response.json();
+
+      if (updatedMovie.actors && updatedMovie.actors.length > 0) {
+        movieFromServer = await addActorsToMovie(movieFromServer, updatedMovie.actors);
+      }
+
       const newMovies = movies.map(m => (m.id === movieFromServer.id ? movieFromServer : m));
       setMovies(newMovies);
       setEditingMovie(null);
     } else {
-      console.error("Błąd przy edycji filmu");
+      console.error("Error during editing film");
     }
   }
 
@@ -87,7 +96,6 @@ function App() {
   }
 
   async function handleDeleteMovie(movie) {
-    console.log("Usuwam film (DELETE /movies/:id):", movie);
     const response = await fetch(`/movies/${movie.id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' }
@@ -98,19 +106,18 @@ function App() {
         setEditingMovie(null);
       }
     } else {
-      console.error("Błąd przy usuwaniu filmu");
+      console.error("Error during deleting a film");
     }
   }
 
   useEffect(() => {
     const fetchMovies = async () => {
-      console.log("Pobieram filmy (GET /movies)...");
       const response = await fetch(`/movies`);
       if (response.ok) {
         const data = await response.json();
         setMovies(data);
       } else {
-        console.error("Błąd przy pobieraniu filmów");
+        console.error("Error during getting films");
       }
     };
     fetchMovies();

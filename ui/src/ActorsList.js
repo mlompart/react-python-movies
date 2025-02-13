@@ -2,7 +2,7 @@ import ActorListItem from "./ActorListItem";
 
 export default function ActorsList({ actors, onDeleteActor }) {
   if (!Array.isArray(actors)) {
-    console.error('props.actors powinno być tablicą!');
+    console.error('props.actors should be a table!');
     return null;
   }
 
